@@ -141,13 +141,13 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
           }}
         >
           {/* LINE 1: [SPARKLE ON LEFT] + "One AI system," + [BALANCING SPACER ON RIGHT] */}
-          <div className="flex items-center justify-center gap-x-2 sm:gap-x-4 w-full">
-            
+          <div className="flex items-center justify-center flex-wrap gap-x-2 sm:gap-x-4 w-full">
+
             {/* 4-Point Radiant Sparkle Star with Soft Aura */}
-            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-8 h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px]">
-              
+            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px]">
+
               {/* Soft, Diffused Glow Aura behind Sparkle (No harsh spots) */}
-              <span 
+              <span
                 className="anim-aura absolute -inset-3 sm:-inset-5 rounded-full pointer-events-none blur-xl sm:blur-2xl"
                 style={{
                   background: 'radial-gradient(circle, rgba(0, 242, 254, 0.45) 0%, rgba(0, 85, 255, 0.3) 50%, transparent 80%)'
@@ -155,43 +155,43 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
               />
 
               {/* Sparkle Star SVG Geometry */}
-              <svg 
-                className="relative z-10 w-8 h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] drop-shadow-[0_0_18px_rgba(0,242,254,0.85)] cursor-pointer"
-                viewBox="0 0 100 100" 
+              <svg
+                className="relative z-10 w-7 h-7 xs:w-8 xs:h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] drop-shadow-[0_0_18px_rgba(0,242,254,0.85)] cursor-pointer"
+                viewBox="0 0 100 100"
                 fill="url(#starGradient)"
               >
                 <path d="M50 0 C50 28 72 50 100 50 C72 50 50 72 50 100 C50 72 28 50 0 50 C28 50 50 28 50 0 Z" />
               </svg>
-              
+
               {/* Orbiting Twinkle Dots */}
               <span className="anim-twinkle-1 absolute -top-1 -right-1.5 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#00F2FE]" />
               <span className="anim-twinkle-2 absolute -bottom-1 -left-1.5 w-1.5 h-1.5 rounded-full bg-[#E0F7FF] shadow-[0_0_5px_#00F2FE]" />
             </span>
 
             {/* Centered Main Text */}
-            <span className="whitespace-nowrap">One AI system,</span>
+            <span className="sm:whitespace-nowrap">One AI system,</span>
 
-            {/* Symmetrical Counter-Spacer on Right (Guarantees Perfect Mathematical Center) */}
-            <span 
-              className="inline-block shrink-0 w-8 h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] invisible pointer-events-none" 
-              aria-hidden="true" 
+            {/* Symmetrical Counter-Spacer on Right (Guarantees Perfect Mathematical Center) — hidden on mobile since text wraps */}
+            <span
+              className="hidden sm:inline-block shrink-0 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] invisible pointer-events-none"
+              aria-hidden="true"
             />
           </div>
 
           {/* LINE 2: [BALANCING SPACER ON LEFT] + "your business, automated." + [HAND ON RIGHT] */}
-          <div className="flex items-center justify-center gap-x-2 sm:gap-x-4 w-full mt-1.5 sm:mt-2.5">
-            
-            {/* Symmetrical Counter-Spacer on Left (Guarantees Perfect Mathematical Center) */}
-            <span 
-              className="inline-block shrink-0 w-8 h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] invisible pointer-events-none" 
-              aria-hidden="true" 
+          <div className="flex items-center justify-center flex-wrap gap-x-2 sm:gap-x-4 w-full mt-1.5 sm:mt-2.5">
+
+            {/* Symmetrical Counter-Spacer on Left (Guarantees Perfect Mathematical Center) — hidden on mobile since text wraps */}
+            <span
+              className="hidden sm:inline-block shrink-0 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] invisible pointer-events-none"
+              aria-hidden="true"
             />
 
             {/* Centered Main Text */}
-            <span className="whitespace-nowrap">your business, automated.</span>
+            <span className="sm:whitespace-nowrap">your business, automated.</span>
 
             {/* Hand Icon on Right with Soft Symmetrical Aura */}
-            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-8 h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px]">
+            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px]">
               
               {/* Soft, Diffused Glow Aura behind Hand */}
               <span 
@@ -202,8 +202,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
               />
 
               {/* Hand Icon (Hand + 3 Lightbulb Coils) */}
-              <svg 
-                className="anim-hand relative z-10 w-8 h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] cursor-pointer"
+              <svg
+                className="anim-hand relative z-10 w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] cursor-pointer"
                 viewBox="0 0 70 76" 
                 fill="none"
               >

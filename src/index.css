@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  --breakpoint-xs: 22rem;
+
   --color-spheno-navy: #080C42;
   --color-spheno-blue: #0018C5;
   --color-spheno-offwhite: #F5F5F2;
