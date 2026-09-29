@@ -141,10 +141,12 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
           }}
         >
           {/* LINE 1: [SPARKLE ON LEFT] + "One AI system," + [BALANCING SPACER ON RIGHT] */}
-          <div className="flex items-center justify-center flex-wrap gap-x-2 sm:gap-x-4 w-full">
+          {/* Plain inline flow below sm (lets long lines wrap without forcing overflow); a real
+              flex row with no wrap at sm+ restores the original guaranteed-single-line desktop layout. */}
+          <div className="w-full sm:flex sm:items-center sm:justify-center sm:gap-x-4">
 
             {/* 4-Point Radiant Sparkle Star with Soft Aura */}
-            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px]">
+            <span className="inline-flex items-center justify-center relative align-middle shrink-0 mr-2 sm:mr-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px]">
 
               {/* Soft, Diffused Glow Aura behind Sparkle (No harsh spots) */}
               <span
@@ -169,30 +171,33 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
             </span>
 
             {/* Centered Main Text */}
-            <span className="sm:whitespace-nowrap">One AI system,</span>
+            <span className="align-middle sm:whitespace-nowrap">One AI system,</span>
 
-            {/* Symmetrical Counter-Spacer on Right (Guarantees Perfect Mathematical Center) — hidden on mobile since text wraps */}
+            {/* Symmetrical Counter-Spacer on Right (Guarantees Perfect Mathematical Center) */}
             <span
-              className="hidden sm:inline-block shrink-0 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] invisible pointer-events-none"
+              className="inline-block align-middle shrink-0 ml-2 sm:ml-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-12 sm:h-12 md:w-15 md:h-15 lg:w-[64px] lg:h-[64px] invisible pointer-events-none"
               aria-hidden="true"
             />
           </div>
 
           {/* LINE 2: [BALANCING SPACER ON LEFT] + "your business, automated." + [HAND ON RIGHT] */}
-          <div className="flex items-center justify-center flex-wrap gap-x-2 sm:gap-x-4 w-full mt-1.5 sm:mt-2.5">
+          {/* Same responsive treatment as line 1: inline flow below sm so the hand icon wraps
+              together with the trailing word "automated." instead of dropping to its own line;
+              a nowrap flex row at sm+ restores the original guaranteed-single-line desktop layout. */}
+          <div className="w-full mt-1.5 sm:mt-2.5 sm:flex sm:items-center sm:justify-center sm:gap-x-4">
 
-            {/* Symmetrical Counter-Spacer on Left (Guarantees Perfect Mathematical Center) — hidden on mobile since text wraps */}
+            {/* Symmetrical Counter-Spacer on Left (Guarantees Perfect Mathematical Center) */}
             <span
-              className="hidden sm:inline-block shrink-0 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] invisible pointer-events-none"
+              className="inline-block align-middle shrink-0 mr-2 sm:mr-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px] invisible pointer-events-none"
               aria-hidden="true"
             />
 
             {/* Centered Main Text */}
-            <span className="sm:whitespace-nowrap">your business, automated.</span>
+            <span className="align-middle sm:whitespace-nowrap">your business, automated.</span>
 
             {/* Hand Icon on Right with Soft Symmetrical Aura */}
-            <span className="inline-flex items-center justify-center relative align-middle shrink-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px]">
-              
+            <span className="inline-flex items-center justify-center relative align-middle shrink-0 ml-2 sm:ml-0 w-7 h-7 xs:w-8 xs:h-8 sm:w-11 sm:h-11 md:w-14 md:h-14 lg:w-[60px] lg:h-[60px]">
+
               {/* Soft, Diffused Glow Aura behind Hand */}
               <span 
                 className="anim-aura absolute -inset-3 sm:-inset-5 rounded-full pointer-events-none blur-xl sm:blur-2xl"

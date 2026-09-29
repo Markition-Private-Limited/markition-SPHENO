@@ -58,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
           : 'bg-transparent border-b border-white/[0.04]'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 h-[68px] flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-5 h-[76px] flex items-center justify-between">
         
         {/* Official Brand Logo */}
         <a 
@@ -66,11 +66,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
           className="flex items-center group transition-opacity hover:opacity-90 cursor-pointer"
           aria-label="SPHENO.AI Home"
         >
-          <SphenoLogo variant="dark" size="md" className="h-6 sm:h-7" />
+          <SphenoLogo variant="dark" size="md" className="h-7 sm:h-8" />
         </a>
 
         {/* Clean Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-[13.5px] font-medium text-[#94A3B8]">
+        <nav className="hidden md:flex items-center gap-9 lg:gap-10 text-[15px] font-medium text-[#94A3B8]">
           <a href="#system" className="hover:text-white transition-colors duration-200">
             System
           </a>
@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
             >
               Solutions
               <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${solutionsOpen ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 transition-transform duration-200 ${solutionsOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
@@ -125,19 +125,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
         </nav>
 
         {/* Desktop Actions */}
-        <div className="hidden sm:flex items-center gap-5">
+        <div className="hidden sm:flex items-center gap-6">
           <a
             href="#chat-demo"
-            className="text-[13px] font-medium text-[#94A3B8] hover:text-white transition-colors px-2 py-1 whitespace-nowrap"
+            className="text-[14.5px] font-medium text-[#94A3B8] hover:text-white transition-colors px-2 py-1 whitespace-nowrap"
           >
             Live Demo
           </a>
           <button
             onClick={onOpenConsultation}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#0018C5] hover:bg-[#0024EA] border border-cyan-400/40 rounded-full transition-all shadow-[0_0_18px_rgba(0,242,254,0.2)] hover:shadow-[0_0_24px_rgba(0,242,254,0.4)] whitespace-nowrap group cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-[13.5px] font-semibold text-white bg-[#0018C5] hover:bg-[#0024EA] border border-cyan-400/40 rounded-full transition-all shadow-[0_0_18px_rgba(0,242,254,0.2)] hover:shadow-[0_0_24px_rgba(0,242,254,0.4)] whitespace-nowrap group cursor-pointer"
           >
             <span>Start a Conversation</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
 
