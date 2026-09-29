@@ -1,14 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react';
 import { SphenoLogo } from './SphenoLogo';
 
 interface NavbarProps {
   onOpenConsultation: () => void;
 }
 
+const SOLUTIONS_MENU = [
+  {
+    heading: 'Media',
+    description: 'Google Ads, SEO, social media management & paid campaigns.',
+    href: '/media',
+  },
+  {
+    heading: 'Technologies',
+    description: 'Custom software, web apps, mobile platforms & SaaS products.',
+    href: '/tech',
+  },
+  {
+    heading: 'Design Lab',
+    description: 'Brand identity, UI/UX design, motion graphics & print.',
+    href: '/design-lab',
+  },
+];
+
 export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
+  const solutionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +38,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (solutionsRef.current && !solutionsRef.current.contains(e.target as Node)) {
+        setSolutionsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -52,6 +83,42 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
           <a href="#execution" className="hover:text-white transition-colors duration-200">
             How It Works
           </a>
+
+          {/* Solutions dropdown */}
+          <div className="relative" ref={solutionsRef}>
+            <button
+              onClick={() => setSolutionsOpen(!solutionsOpen)}
+              className="flex items-center gap-1 hover:text-white transition-colors duration-200 cursor-pointer"
+              aria-expanded={solutionsOpen}
+            >
+              Solutions
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${solutionsOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            {solutionsOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[340px] rounded-2xl border border-white/[0.08] bg-[#05060B]/98 backdrop-blur-2xl shadow-[0_24px_60px_rgba(0,0,0,0.55)] p-2 z-50">
+                {SOLUTIONS_MENU.map((sol) => (
+                  <a
+                    key={sol.heading}
+                    href={sol.href}
+                    target="_top"
+                    onClick={() => setSolutionsOpen(false)}
+                    className="flex flex-col gap-0.5 rounded-xl px-4 py-3 hover:bg-white/[0.05] transition-colors duration-150 group"
+                  >
+                    <span className="text-[13.5px] font-semibold text-white group-hover:text-cyan-300 transition-colors">
+                      {sol.heading}
+                    </span>
+                    <span className="text-[12px] text-[#7A8CA8] leading-snug">
+                      {sol.description}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+
           <a href="#faq" className="hover:text-white transition-colors duration-200">
             FAQ
           </a>
@@ -112,15 +179,45 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
             >
               Industries
             </a>
-            <a 
-              href="#execution" 
+            <a
+              href="#execution"
               onClick={() => setMobileMenuOpen(false)}
               className="hover:text-white py-1 transition-colors"
             >
               How It Works
             </a>
-            <a 
-              href="#faq" 
+
+            {/* Mobile Solutions dropdown */}
+            <div>
+              <button
+                onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
+                className="w-full flex items-center justify-between hover:text-white py-1 transition-colors"
+                aria-expanded={mobileSolutionsOpen}
+              >
+                Solutions
+                <ChevronDown
+                  className={`w-4 h-4 transition-transform duration-200 ${mobileSolutionsOpen ? 'rotate-180' : ''}`}
+                />
+              </button>
+              {mobileSolutionsOpen && (
+                <div className="mt-2 pl-3 border-l border-white/[0.08] flex flex-col gap-3">
+                  {SOLUTIONS_MENU.map((sol) => (
+                    <a
+                      key={sol.heading}
+                      href={sol.href}
+                      target="_top"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-[13px] text-[#94A3B8] hover:text-white transition-colors"
+                    >
+                      {sol.heading}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <a
+              href="#faq"
               onClick={() => setMobileMenuOpen(false)}
               className="hover:text-white py-1 transition-colors"
             >
