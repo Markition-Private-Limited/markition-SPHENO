@@ -992,6 +992,7 @@ export const Industries: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number>(1); // Default to index 1 (Aesthetic Clinics, signature lime card)
   const [expandedIndustry, setExpandedIndustry] = useState<Industry | null>(null);
   const activeTabRef = useRef<HTMLButtonElement | null>(null);
+  const isMounted = useRef<boolean>(false);
 
   // Drag / hold-to-spin state for the 3D card deck
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -1034,8 +1035,12 @@ export const Industries: React.FC = () => {
     setDragOffset(0);
   };
 
-  // Smoothly scroll active tab pill into view when activeIndex changes
+  // Smoothly scroll active tab pill into view when activeIndex changes (skip on first mount)
   useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
     if (activeTabRef.current) {
       activeTabRef.current.scrollIntoView({
         behavior: 'smooth',
