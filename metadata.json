@@ -1,0 +1,6 @@
+{
+  "name": "Spheno AI — Connected AI Business System",
+  "description": "Markition's central AI business system bringing together Spheno Chat, Spheno Voice, Spheno CRM, and Spheno WhatsApp AI to automate conversations, qualify leads, and book appointments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
