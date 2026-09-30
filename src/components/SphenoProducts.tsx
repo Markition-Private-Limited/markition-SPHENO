@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion';
 import { Sparkles, ArrowRight, Volume2, Mic, Play, Pause } from 'lucide-react';
 import { VoiceBotAvatar } from './VoiceBotAvatar';
 import { WhatsAppProductMockup } from './WhatsAppProductMockup';
@@ -66,11 +67,197 @@ const servicesData: ServiceItem[] = [
   },
 ];
 
-export const SphenoProducts: React.FC = () => {
-  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+// Scales its children down (never up) to fit within maxHeight, instead of letting an
+// oversized mockup graphic dictate the whole card's height or get hard-cropped.
+const FitMockup: React.FC<{ maxHeight: number; children: React.ReactNode }> = ({ maxHeight, children }) => {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = innerRef.current;
+    if (!el) return;
+    const measure = () => {
+      const naturalHeight = el.scrollHeight;
+      setScale(naturalHeight > maxHeight ? maxHeight / naturalHeight : 1);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [maxHeight]);
 
   return (
-    <section id="products" className="py-24 sm:py-32 bg-[#020412] text-white border-b border-[#141A3D] relative overflow-hidden select-none">
+    <div style={{ height: scale < 1 ? maxHeight : undefined, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+      <div ref={innerRef} style={{ transform: `scale(${scale})`, transformOrigin: 'center', width: '100%' }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+function useIsMobileViewport() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 900);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  return isMobile;
+}
+
+interface ProductCardProps {
+  service: ServiceItem;
+  index: number;
+  total: number;
+  scrollYProgress: MotionValue<number>;
+  isPlayingVoice: boolean;
+  setIsPlayingVoice: (v: boolean | ((prev: boolean) => boolean)) => void;
+}
+
+// Sticky stacking card — pins in place while the next card scrolls over it,
+// shrinking slightly as later cards take its spot (same pattern used for the
+// White Line homepage services section). The CTA sits high in the text column
+// so it stays visible in the peeking strip even once mostly covered.
+const ProductCard: React.FC<ProductCardProps> = ({ service, index, total, scrollYProgress, isPlayingVoice, setIsPlayingVoice }) => {
+  const isImageLeft = service.imagePosition === 'left';
+  const isVoiceService = service.id === 'spheno-voice';
+
+  const targetScale = 1 - (total - 1 - index) * 0.035;
+  const cardScale = useTransform(scrollYProgress, [index / total, 1], [1, targetScale]);
+
+  // A fixed 100px-per-card stack offset pushed the 3rd/4th cards' pin position
+  // far enough down that, on typical laptop-height viewports (~700-800px),
+  // their bottoms were clipped below the fold before ever being fully visible.
+  // Scaling the offset with viewport height (vh) instead keeps every card's
+  // pin point proportional to the available height, so it fits everywhere.
+  return (
+    <div className="sticky" style={{ top: `calc(64px + ${index * 4}vh)` }}>
+      <motion.div style={{ scale: cardScale, transformOrigin: 'top center', willChange: 'transform' }}>
+        <div
+          id={service.id}
+          className={`relative rounded-3xl bg-[#06092A]/95 border p-5 sm:p-7 lg:p-9 group cursor-default ${
+            isVoiceService
+              ? 'border-cyan-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_40px_rgba(0,242,254,0.12)] hover:border-cyan-400/80 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_80px_rgba(0,242,254,0.35),inset_0_1px_0_rgba(0,242,254,0.2)]'
+              : 'border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-cyan-400/50 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_60px_rgba(0,180,255,0.25),inset_0_1px_0_rgba(0,242,254,0.12)]'
+          } transition-[border-color,box-shadow] duration-500`}
+        >
+          {/* Hover shimmer overlay */}
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-400/0 via-cyan-400/[0.05] to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+          {/* Top edge glow line */}
+          <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-cyan-400/0 to-transparent group-hover:via-cyan-400/60 transition-all duration-500 pointer-events-none" />
+
+          <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+
+            {/* Visual Image Mockup (Light Theme UI Preview Screen) — scaled to fit so an
+                oversized mockup graphic can never push the card's readable text/CTA off-screen */}
+            <div className={`lg:col-span-7 ${isImageLeft ? 'lg:order-1' : 'lg:order-2'}`}>
+              <FitMockup maxHeight={420}>
+                {isVoiceService ? (
+                  <VoiceBotAvatar
+                    isPlaying={isPlayingVoice}
+                    onTogglePlay={() => setIsPlayingVoice((v) => !v)}
+                  />
+                ) : service.id === 'spheno-whatsapp' ? (
+                  <WhatsAppProductMockup />
+                ) : service.id === 'spheno-chat' ? (
+                  <ChatProductMockup />
+                ) : service.id === 'spheno-crm' ? (
+                  <CrmProductMockup />
+                ) : (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-2xl group-hover:border-cyan-400/60 group-hover:shadow-[0_20px_60px_rgba(0,180,255,0.3)] transition-all duration-500 bg-white">
+                    <img
+                      src={service.imageSrc}
+                      alt={service.imageAlt}
+                      className="w-full h-auto object-cover transform group-hover:scale-[1.035] transition-transform duration-700 block"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+              </FitMockup>
+            </div>
+
+            {/* Text Details & Metrics */}
+            <div className={`lg:col-span-5 flex flex-col justify-center ${isImageLeft ? 'lg:order-2' : 'lg:order-1'}`}>
+
+              {/* Pill Badge + CTA link share one compact top row — this is the only part
+                  of the card guaranteed to stay inside the peeking strip once later cards
+                  in the stack cover the rest, so the CTA must live here, not at the bottom. */}
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#08103A] border border-cyan-500/30 text-cyan-300 text-xs font-mono font-semibold tracking-wider uppercase w-fit shadow-[0_0_12px_rgba(0,242,254,0.15)] transition-all duration-500 group-hover:border-cyan-400/70 group-hover:shadow-[0_0_22px_rgba(0,242,254,0.4)]">
+                  <span>{service.pill}</span>
+                </div>
+
+                <a
+                  href="#execution"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-cyan-400 hover:text-cyan-300 hover:underline underline-offset-4 transition-colors group/cta cursor-pointer shrink-0"
+                >
+                  <span>Learn how it executes</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover/cta:translate-x-1.5 transition-transform" />
+                </a>
+              </div>
+
+              {/* Service Title */}
+              <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-[1.2] transition-colors duration-500 group-hover:text-cyan-50">
+                {service.title}
+              </h3>
+
+              {isVoiceService ? (
+                <button
+                  type="button"
+                  onClick={() => setIsPlayingVoice((v) => !v)}
+                  className="mt-4 inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#0018C5] via-[#1D4ED8] to-[#0284C7] hover:from-[#0024EA] hover:via-[#2563EB] hover:to-[#00F2FE] text-xs sm:text-sm font-bold text-white border border-cyan-400/40 shadow-[0_0_24px_rgba(0,180,255,0.35)] hover:shadow-[0_0_36px_rgba(0,242,254,0.6)] active:scale-95 transition-all duration-200 cursor-pointer w-fit"
+                >
+                  <Volume2 className={`w-4 h-4 text-cyan-200 shrink-0 ${isPlayingVoice ? 'animate-pulse text-cyan-300' : ''}`} />
+                  <span className="whitespace-nowrap tracking-wide">
+                    {isPlayingVoice ? 'Pause Voice Demo' : "Let's Try It Out"}
+                  </span>
+                </button>
+              ) : null}
+
+              {/* Service Description */}
+              <p className="mt-4 text-sm sm:text-base text-[#9EA6CA] leading-relaxed font-normal">
+                {service.description}
+              </p>
+
+              {/* 2 Bullet Metrics with Glowing Cyan Dots */}
+              <div className="mt-6 pt-6 border-t border-white/[0.08] space-y-3">
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-slate-200">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F2FE] transition-all duration-500 group-hover:scale-150 group-hover:shadow-[0_0_16px_#00F2FE]" />
+                  <span>{service.bullet1}</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-slate-200">
+                  <span className="w-2 h-2 rounded-full bg-[#0070F3] shadow-[0_0_8px_#0070F3] transition-all duration-500 delay-75 group-hover:scale-150 group-hover:shadow-[0_0_16px_#0070F3]" />
+                  <span>{service.bullet2}</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export const SphenoProducts: React.FC = () => {
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isMobileViewport = useIsMobileViewport();
+
+  // Single shared scroll listener for the whole stack, rather than one per card.
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  const total = servicesData.length;
+  const perCard = isMobileViewport ? 78 : 92;
+
+  return (
+    <section id="products" className="py-24 sm:py-32 bg-[#020412] text-white border-b border-[#141A3D] relative overflow-x-clip select-none">
       
       {/* Background Ambient Sapphire & Cyan Glows */}
       <div className="absolute top-1/4 left-[-10%] w-[650px] h-[650px] bg-[#0018C5]/18 blur-[160px] rounded-full pointer-events-none" />
@@ -118,115 +305,20 @@ export const SphenoProducts: React.FC = () => {
           </p>
         </div>
 
-        {/* 4 Stacked Services Cards with Crisp Light Theme Product Displays */}
-        <div className="space-y-8 sm:space-y-10">
-          {servicesData.map((service) => {
-            const isImageLeft = service.imagePosition === 'left';
-            const isVoiceService = service.id === 'spheno-voice';
-
-            return (
-              <div
-                key={service.id}
-                id={service.id}
-                className={`relative rounded-3xl bg-[#06092A]/85 border transition-all duration-500 backdrop-blur-xl p-6 sm:p-10 lg:p-12 group cursor-default hover:-translate-y-2 hover:scale-[1.012] ${
-                  isVoiceService
-                    ? 'border-cyan-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_40px_rgba(0,242,254,0.12)] hover:border-cyan-400/80 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_80px_rgba(0,242,254,0.35),inset_0_1px_0_rgba(0,242,254,0.2)]'
-                    : 'border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-cyan-400/50 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_60px_rgba(0,180,255,0.25),inset_0_1px_0_rgba(0,242,254,0.12)]'
-                }`}
-              >
-                {/* Hover shimmer overlay */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-400/0 via-cyan-400/[0.05] to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-                {/* Top edge glow line */}
-                <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-cyan-400/0 to-transparent group-hover:via-cyan-400/60 transition-all duration-500 pointer-events-none" />
-
-                <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                  
-                  {/* Visual Image Mockup (Light Theme UI Preview Screen) */}
-                  <div className={`lg:col-span-7 ${isImageLeft ? 'lg:order-1' : 'lg:order-2'}`}>
-                    {isVoiceService ? (
-                      <VoiceBotAvatar
-                        isPlaying={isPlayingVoice}
-                        onTogglePlay={() => setIsPlayingVoice(!isPlayingVoice)}
-                      />
-                    ) : service.id === 'spheno-whatsapp' ? (
-                      <WhatsAppProductMockup />
-                    ) : service.id === 'spheno-chat' ? (
-                      <ChatProductMockup />
-                    ) : service.id === 'spheno-crm' ? (
-                      <CrmProductMockup />
-                    ) : (
-                      <div className="relative rounded-2xl overflow-hidden border border-slate-200/90 shadow-2xl group-hover:border-cyan-400/60 group-hover:shadow-[0_20px_60px_rgba(0,180,255,0.3)] transition-all duration-500 bg-white">
-                        <img
-                          src={service.imageSrc}
-                          alt={service.imageAlt}
-                          className="w-full h-auto object-cover transform group-hover:scale-[1.035] transition-transform duration-700 block"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Text Details & Metrics */}
-                  <div className={`lg:col-span-5 flex flex-col justify-center ${isImageLeft ? 'lg:order-2' : 'lg:order-1'}`}>
-                    
-                    {/* Pill Eyebrow Badge */}
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#08103A] border border-cyan-500/30 text-cyan-300 text-xs font-mono font-semibold tracking-wider uppercase mb-5 w-fit shadow-[0_0_12px_rgba(0,242,254,0.15)] transition-all duration-500 group-hover:border-cyan-400/70 group-hover:shadow-[0_0_22px_rgba(0,242,254,0.4)] group-hover:-translate-y-0.5">
-                      <span>{service.pill}</span>
-                    </div>
-
-                    {/* Service Title */}
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-[1.2] transition-colors duration-500 group-hover:text-cyan-50">
-                      {service.title}
-                    </h3>
-
-                    {/* Service Description */}
-                    <p className="mt-4 text-sm sm:text-base text-[#9EA6CA] leading-relaxed font-normal">
-                      {service.description}
-                    </p>
-
-                    {/* 2 Bullet Metrics with Glowing Cyan Dots */}
-                    <div className="mt-6 pt-6 border-t border-white/[0.08] space-y-3">
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-slate-200">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#00F2FE] transition-all duration-500 group-hover:scale-150 group-hover:shadow-[0_0_16px_#00F2FE]" />
-                        <span>{service.bullet1}</span>
-                      </div>
-                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-medium text-slate-200">
-                        <span className="w-2 h-2 rounded-full bg-[#0070F3] shadow-[0_0_8px_#0070F3] transition-all duration-500 delay-75 group-hover:scale-150 group-hover:shadow-[0_0_16px_#0070F3]" />
-                        <span>{service.bullet2}</span>
-                      </div>
-                    </div>
-
-                    {/* Interactive Action Controls */}
-                    <div className="mt-8 pt-2 flex flex-wrap items-center gap-4 sm:gap-5">
-                      {isVoiceService ? (
-                        <button
-                          type="button"
-                          onClick={() => setIsPlayingVoice(!isPlayingVoice)}
-                          className="inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-[#0018C5] via-[#1D4ED8] to-[#0284C7] hover:from-[#0024EA] hover:via-[#2563EB] hover:to-[#00F2FE] text-xs sm:text-sm font-bold text-white border border-cyan-400/40 shadow-[0_0_24px_rgba(0,180,255,0.35)] hover:shadow-[0_0_36px_rgba(0,242,254,0.6)] active:scale-95 transition-all duration-200 cursor-pointer shrink-0"
-                        >
-                          <Volume2 className={`w-4 h-4 text-cyan-200 shrink-0 ${isPlayingVoice ? 'animate-pulse text-cyan-300' : ''}`} />
-                          <span className="whitespace-nowrap tracking-wide">
-                            {isPlayingVoice ? 'Pause Voice Demo' : "Let's Try It Out"}
-                          </span>
-                        </button>
-                      ) : null}
-
-                      <a
-                        href="#execution"
-                        className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-cyan-400 hover:text-cyan-300 hover:underline underline-offset-4 transition-colors group cursor-pointer"
-                      >
-                        <span>Learn how {service.pill.split('·')[1]?.trim() || 'it'} executes</span>
-                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1.5 transition-transform" />
-                      </a>
-                    </div>
-
-                  </div>
-
-                </div>
-              </div>
-            );
-          })}
+        {/* 4 Sticky Stacking Services Cards — pin in place while the next card scrolls
+            over it, shrinking slightly, matching the White Line homepage services animation */}
+        <div ref={containerRef} className="relative" style={{ height: `${total * perCard}vh` }}>
+          {servicesData.map((service, idx) => (
+            <ProductCard
+              key={service.id}
+              service={service}
+              index={idx}
+              total={total}
+              scrollYProgress={scrollYProgress}
+              isPlayingVoice={isPlayingVoice}
+              setIsPlayingVoice={setIsPlayingVoice}
+            />
+          ))}
         </div>
 
       </div>

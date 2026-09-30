@@ -323,6 +323,7 @@ export default function FloatingLines({
     if (!container) return;
 
     let active = true;
+    let visible = true;
 
     const scene = new Scene();
 
@@ -434,6 +435,12 @@ export default function FloatingLines({
 
     if (ro) ro.observe(container);
 
+    const io =
+      typeof IntersectionObserver !== 'undefined'
+        ? new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: '200px' })
+        : null;
+    if (io) io.observe(container);
+
     const handlePointerMove = (event: PointerEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -465,6 +472,11 @@ export default function FloatingLines({
     const renderLoop = () => {
       if (!active) return;
 
+      if (!visible) {
+        raf = requestAnimationFrame(renderLoop);
+        return;
+      }
+
       uniforms.iTime.value = clock.getElapsedTime();
 
       if (interactive) {
@@ -491,6 +503,7 @@ export default function FloatingLines({
       cancelAnimationFrame(raf);
 
       if (ro) ro.disconnect();
+      if (io) io.disconnect();
 
       if (interactive) {
         renderer.domElement.removeEventListener('pointermove', handlePointerMove);

@@ -330,7 +330,9 @@ export const SphenoSystem: React.FC = () => {
     // every card at once, leaving the previously-active card stuck while the page
     // keeps scrolling past it (most noticeable on the last card, which has nothing
     // after it to hand activation off to).
-    const onScroll = () => {
+    let ticking = false;
+    const measure = () => {
+      ticking = false;
       const sectionRect = sectionRef.current?.getBoundingClientRect();
       if (!sectionRect || sectionRect.bottom < 0 || sectionRect.top > window.innerHeight) return;
       const nearest = cards
@@ -371,6 +373,15 @@ export const SphenoSystem: React.FC = () => {
         panelEl.style.opacity = '1';
         panelEl.style.pointerEvents = '';
       }
+    };
+    // Batch to one measurement per animation frame instead of firing multiple
+    // getBoundingClientRect() reads (forced layout) on every raw scroll event —
+    // this listener runs for the whole page's lifetime, not just while this
+    // section is visible, so unthrottled it was a sitewide source of jank.
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(measure);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 

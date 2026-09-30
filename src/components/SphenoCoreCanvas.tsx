@@ -47,6 +47,7 @@ export const SphenoCoreCanvas: React.FC<SphenoCoreCanvasProps> = ({
     let time = 0;
     let currentX = 0;
     let currentY = 0;
+    let visible = true;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -61,6 +62,12 @@ export const SphenoCoreCanvas: React.FC<SphenoCoreCanvasProps> = ({
 
     resize();
     window.addEventListener('resize', resize);
+
+    const io =
+      typeof IntersectionObserver !== 'undefined'
+        ? new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }, { rootMargin: '200px' })
+        : null;
+    if (io && containerRef.current) io.observe(containerRef.current);
 
     // Nodes definition: 4 connected products
     const nodes = [
@@ -82,6 +89,11 @@ export const SphenoCoreCanvas: React.FC<SphenoCoreCanvasProps> = ({
     }
 
     const render = () => {
+      if (!visible) {
+        animationFrameId = requestAnimationFrame(render);
+        return;
+      }
+
       time += 0.012;
       currentX += (mouseTarget.current.x - currentX) * 0.05;
       currentY += (mouseTarget.current.y - currentY) * 0.05;
@@ -249,6 +261,7 @@ export const SphenoCoreCanvas: React.FC<SphenoCoreCanvasProps> = ({
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrameId);
+      if (io) io.disconnect();
     };
   }, [activeNode]);
 

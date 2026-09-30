@@ -221,7 +221,7 @@ export const ChatProductMockup: React.FC = () => {
           {/* Layered on top with realistic depth & glowing shadow   */}
           {/* ======================================================= */}
           <div className="absolute top-[68px] -left-2 sm:-left-6 right-2 sm:right-auto sm:w-[380px] z-20 pointer-events-none">
-            <div className="rounded-2xl p-3 sm:p-3.5 bg-gradient-to-r from-[#0018C5] via-[#0062FE] to-[#00D2FE] text-white shadow-[0_12px_32px_rgba(0,102,255,0.45)] border border-white/20 backdrop-blur-md flex items-center justify-between gap-3 animate-pulse-subtle">
+            <div className="rounded-2xl p-3 sm:p-3.5 bg-gradient-to-r from-[#0018C5] via-[#0062FE] to-[#00D2FE] text-white shadow-[0_12px_32px_rgba(0,102,255,0.45)] border border-white/20 flex items-center justify-between gap-3 animate-pulse-subtle">
               
               {/* Glowing Avatar */}
               <div className="flex items-center gap-2.5 min-w-0">

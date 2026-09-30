@@ -11,6 +11,7 @@ import { TalkThinkAct } from './components/TalkThinkAct';
 import { WhySpheno } from './components/WhySpheno';
 import { Faq } from './components/Faq';
 import { FinalCta } from './components/FinalCta';
+import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { ConsultationModal } from './components/ConsultationModal';
 
@@ -57,9 +58,12 @@ export default function App() {
 
         {/* 16 Final CTA (Cinematic Dark #080C42) */}
         <FinalCta onOpenConsultation={() => setConsultationOpen(true)} />
+
+        {/* 17 Contact Form (Let's Build Something Great) */}
+        <ContactSection />
       </main>
 
-      {/* 17 Footer (Dark #05072B) */}
+      {/* 18 Footer (Dark #05072B) */}
       <Footer />
 
       {/* Interactive Consultation Request Modal */}

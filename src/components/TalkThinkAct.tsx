@@ -41,101 +41,119 @@ const processSteps: ProcessStep[] = [
 ];
 
 export const TalkThinkAct: React.FC = () => {
-  const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
-  const sectionRef = useRef<HTMLElement | null>(null);
+  const outerRef = useRef<HTMLDivElement | null>(null); // tall scroll-jack track
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const total = processSteps.length;
 
-  // =========================================================
-  // SCROLL-DRIVEN TIMELINE ANIMATION (EXACT MATCH TO IMAGE 2)
-  // Tracks user scroll progress and illuminates steps dynamically
-  // =========================================================
+  // The section pins in place (via the sticky inner wrapper below) while the
+  // extra height of `outerRef` is scrolled through, and `progress` (0-1) tracks
+  // how far through that pinned scroll we are. The first 3 points each get an
+  // equal, generous scroll segment (weight 1) so a fast scroll can't skip past
+  // one — but the LAST point gets a much shorter one (weight 0.35): once it's
+  // active there's nothing left to reveal, so giving it a full equal quarter
+  // just felt like one extra, pointless scroll before the section finally
+  // released and the page moved on.
+  const [progress, setProgress] = useState(0);
+  const segmentWeights = [1, 1, 1, 0.35];
+  const totalWeight = segmentWeights.reduce((a, b) => a + b, 0);
+  const segmentBounds = (() => {
+    let cumulative = 0;
+    return segmentWeights.map((w) => { cumulative += w; return cumulative / totalWeight; });
+  })();
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
+    let ticking = false;
 
-      // Check if section is within the active viewport range
-      if (sectionRect.top < windowHeight * 0.75 && sectionRect.bottom > windowHeight * 0.2) {
-        // Trigger line around 45% viewport height
-        const triggerY = windowHeight * 0.45;
-        let bestIndex = 0;
-        let minDistance = Infinity;
-
-        stepRefs.current.forEach((el, index) => {
-          if (!el) return;
-          const rect = el.getBoundingClientRect();
-          const stepCenter = rect.top + rect.height * 0.3;
-          const dist = Math.abs(stepCenter - triggerY);
-
-          // If step has been reached or passed
-          if (stepCenter <= triggerY) {
-            bestIndex = Math.max(bestIndex, index);
-          }
-
-          if (dist < minDistance) {
-            minDistance = dist;
-          }
-        });
-
-        setActiveStepIndex(bestIndex);
+    const computeProgress = () => {
+      ticking = false;
+      const outer = outerRef.current;
+      if (!outer) return;
+      const rect = outer.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if (scrollable <= 0) {
+        setProgress(rect.top <= 0 ? 1 : 0);
+        return;
       }
+      const p = -rect.top / scrollable;
+      setProgress(Math.min(1, Math.max(0, p)));
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    // Batch to one measurement per animation frame instead of once per raw
+    // scroll event — un-throttled getBoundingClientRect() reads on every
+    // scroll tick force layout thrashing and were a source of site-wide jank.
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(computeProgress);
+    };
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    computeProgress();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
-  // Calculate line height percentage based on activeStepIndex
-  const lineProgressHeights = ['12%', '38%', '68%', '100%'];
-  const currentLineHeight = lineProgressHeights[activeStepIndex] || '12%';
+  let activeStepIndex = segmentBounds.findIndex((b) => progress < b);
+  if (activeStepIndex === -1) activeStepIndex = total - 1;
+  // Fill snaps to each point's own target the moment it activates, then holds
+  // steady for the rest of that point's dwell (the existing CSS transition
+  // below animates the snap smoothly) — it does not keep growing continuously
+  // through the whole segment, so it visibly stops for good once point 4 hits 100%.
+  const currentLineHeight = `${((activeStepIndex + 1) / total) * 100}%`;
 
   return (
-    <section 
-      ref={sectionRef}
-      id="execution" 
-      className="py-24 sm:py-32 bg-[#020410] text-white border-b border-[#141A3D] relative overflow-hidden select-none"
+    <section
+      id="execution"
+      className="bg-[#020410] text-white border-b border-[#141A3D] relative overflow-x-clip select-none"
     >
-      
-      {/* Background Ambient Atmosphere (Spheno Electric Cyan & Royal Sapphire) */}
-      <div className="absolute top-1/4 left-[-10%] w-[600px] h-[600px] bg-[#00F2FE]/10 blur-[170px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 right-[-5%] w-[550px] h-[550px] bg-[#0018C5]/20 blur-[160px] rounded-full pointer-events-none" />
+      {/* Tall scroll-jack track: the section pins (via the sticky wrapper inside)
+          for this whole extra height, giving the timeline room to fill before the
+          page continues scrolling to the next section. overflow-x-clip (not
+          overflow-hidden) on the section above is required — plain overflow:hidden
+          silently breaks position:sticky here, same as it did in SphenoSystem. */}
+      <div ref={outerRef} className="relative" style={{ height: '380vh' }}>
+        <div className="sticky top-0 min-h-screen flex items-center py-6 sm:py-8">
 
-      {/* Subtle Dot Grid */}
-      <div 
-        className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #00F2FE 1px, transparent 0)`,
-          backgroundSize: '36px 36px'
-        }}
-      />
+          {/* Background Ambient Atmosphere (Spheno Electric Cyan & Royal Sapphire) */}
+          <div className="absolute top-1/4 left-[-10%] w-[600px] h-[600px] bg-[#00F2FE]/10 blur-[170px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-1/4 right-[-5%] w-[550px] h-[550px] bg-[#0018C5]/20 blur-[160px] rounded-full pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        
+          {/* Subtle Dot Grid */}
+          <div
+            className="absolute inset-0 opacity-[0.025] pointer-events-none"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, #00F2FE 1px, transparent 0)`,
+              backgroundSize: '36px 36px'
+            }}
+          />
+
+          <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
+
         {/* ========================================================= */}
         {/* MAIN CONTAINER: 2-COLUMN SPLIT                            */}
         {/* Left: Section Headings & Interactive Status               */}
         {/* Right: The Exact 4-Step Vertical Timeline in Cyan Theme   */}
         {/* ========================================================= */}
-        <div className="rounded-[32px] sm:rounded-[40px] bg-[#05071F]/90 border border-white/[0.08] backdrop-blur-2xl p-8 sm:p-12 lg:p-16 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
+        <div className="rounded-[32px] sm:rounded-[40px] bg-[#05071F]/90 border border-white/[0.08] backdrop-blur-2xl p-5 sm:p-7 lg:p-9 shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+
             {/* ===================================================== */}
             {/* LEFT COLUMN: Headings, Body & Active Step Overview    */}
             {/* ===================================================== */}
             <div className="lg:col-span-5 flex flex-col justify-start lg:sticky lg:top-28">
-              
+
               {/* Eyebrow Pill Badge (Spheno Signature Theme) */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#060B24]/90 border border-cyan-400/40 text-xs font-semibold text-cyan-300 mb-6 shadow-[0_0_15px_rgba(0,242,254,0.2)] w-fit">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#060B24]/90 border border-cyan-400/40 text-xs font-semibold text-cyan-300 mb-3 shadow-[0_0_15px_rgba(0,242,254,0.2)] w-fit">
                 <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 <span className="uppercase tracking-wider font-mono">HOW IT WORKS · THE PROCESS</span>
               </div>
 
               {/* Dominant Headline */}
-              <h2 className="text-3xl sm:text-5xl lg:text-[50px] font-bold text-white tracking-tight leading-[1.12]">
+              <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-bold text-white tracking-tight leading-[1.14]">
                 Our Process. <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-cyan-400">
                   How Spheno builds systems.
@@ -143,13 +161,13 @@ export const TalkThinkAct: React.FC = () => {
               </h2>
 
               {/* Supporting Copy */}
-              <p className="mt-6 text-base sm:text-lg text-[#9EA6CA] leading-relaxed font-normal">
+              <p className="mt-3 text-sm sm:text-base text-[#9EA6CA] leading-relaxed font-normal">
                 Businesses do not need random chatbots. They need a disciplined progression from leadership clarity to battle-tested autonomous revenue engines.
               </p>
 
               {/* Active Step Feature Card */}
-              <div className="mt-8 p-5 rounded-2xl bg-white/[0.03] border border-cyan-400/20 backdrop-blur-md">
-                <div className="flex items-center justify-between text-xs font-mono mb-2">
+              <div className="mt-4 p-3.5 rounded-2xl bg-white/[0.03] border border-cyan-400/20 backdrop-blur-md">
+                <div className="flex items-center justify-between text-xs font-mono mb-1.5">
                   <span className="text-cyan-400 font-bold uppercase tracking-wider">
                     CURRENT PHASE {processSteps[activeStepIndex].step}
                   </span>
@@ -157,10 +175,10 @@ export const TalkThinkAct: React.FC = () => {
                     ACTIVE
                   </span>
                 </div>
-                <h4 className="text-lg font-bold text-white mb-2">
+                <h4 className="text-base font-bold text-white mb-1.5">
                   {processSteps[activeStepIndex].title}
                 </h4>
-                <div className="space-y-1.5 mt-3">
+                <div className="space-y-1 mt-2">
                   {processSteps[activeStepIndex].deliverables.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 text-xs text-[#CBD5E1]">
                       <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
@@ -171,7 +189,7 @@ export const TalkThinkAct: React.FC = () => {
               </div>
 
               {/* Quick Navigation Help */}
-              <div className="mt-6 flex items-center gap-3 text-xs text-[#64748B] font-mono">
+              <div className="mt-3 flex items-center gap-3 text-xs text-[#64748B] font-mono">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
                 <span>Scroll or click steps to view phase requirements</span>
               </div>
@@ -182,7 +200,7 @@ export const TalkThinkAct: React.FC = () => {
             {/* RIGHT COLUMN: TIMELINE WITH SCROLL LINE (CYAN THEME)  */}
             {/* ===================================================== */}
             <div className="lg:col-span-7 relative pl-2 sm:pl-6">
-              
+
               {/* 1. Base Grey Timeline Spine (Full Height) */}
               <div className="absolute left-[19px] sm:left-[35px] top-6 bottom-10 w-[2px] bg-[#1E293B] pointer-events-none" />
 
@@ -197,7 +215,7 @@ export const TalkThinkAct: React.FC = () => {
               />
 
               {/* 3. Steps Stack */}
-              <div className="space-y-14 sm:space-y-16">
+              <div className="space-y-5 sm:space-y-6">
                 
                 {processSteps.map((stepItem, index) => {
                   const isActive = index === activeStepIndex;
@@ -207,7 +225,7 @@ export const TalkThinkAct: React.FC = () => {
                     <div
                       key={stepItem.step}
                       ref={(el) => { stepRefs.current[index] = el; }}
-                      onClick={() => setActiveStepIndex(index)}
+                      onClick={() => stepRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
                       className="relative pl-12 sm:pl-16 group cursor-pointer transition-all duration-300"
                     >
                       {/* Timeline Node / Bead (Spheno Cyan Theme) */}
@@ -226,8 +244,8 @@ export const TalkThinkAct: React.FC = () => {
                       </div>
 
                       {/* Step Number (Spheno Cyan Theme) */}
-                      <span 
-                        className={`text-xs sm:text-sm font-mono font-bold tracking-widest block uppercase mb-1.5 transition-colors duration-300 ${
+                      <span
+                        className={`text-xs font-mono font-bold tracking-widest block uppercase mb-1 transition-colors duration-300 ${
                           isActive 
                             ? 'text-cyan-400 drop-shadow-[0_0_8px_rgba(0,242,254,0.7)]' 
                             : isPassed
@@ -239,8 +257,8 @@ export const TalkThinkAct: React.FC = () => {
                       </span>
 
                       {/* Title */}
-                      <h3 
-                        className={`text-2xl sm:text-3xl lg:text-[34px] font-bold tracking-tight transition-colors duration-300 ${
+                      <h3
+                        className={`text-lg sm:text-xl lg:text-[22px] font-bold tracking-tight transition-colors duration-300 ${
                           isActive 
                             ? 'text-white' 
                             : isPassed
@@ -252,8 +270,8 @@ export const TalkThinkAct: React.FC = () => {
                       </h3>
 
                       {/* Description */}
-                      <p 
-                        className={`mt-2 text-sm sm:text-base leading-relaxed max-w-xl transition-colors duration-300 font-normal ${
+                      <p
+                        className={`mt-1 text-xs sm:text-sm leading-relaxed max-w-xl transition-colors duration-300 font-normal ${
                           isActive 
                             ? 'text-[#CBD5E1]' 
                             : isPassed
@@ -276,6 +294,8 @@ export const TalkThinkAct: React.FC = () => {
 
         </div>
 
+          </div>
+        </div>
       </div>
     </section>
   );
