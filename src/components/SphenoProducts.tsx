@@ -138,9 +138,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ service, index, total, scroll
           id={service.id}
           className={`relative rounded-3xl bg-[#06092A]/95 border p-5 sm:p-7 lg:p-9 group cursor-default ${
             isVoiceService
-              ? 'border-cyan-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_40px_rgba(0,242,254,0.12)] hover:border-cyan-400/80 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_80px_rgba(0,242,254,0.35),inset_0_1px_0_rgba(0,242,254,0.2)]'
-              : 'border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-cyan-400/50 hover:shadow-[0_40px_90px_rgba(0,0,0,0.6),0_0_60px_rgba(0,180,255,0.25),inset_0_1px_0_rgba(0,242,254,0.12)]'
+              ? 'border-cyan-500/40 shadow-[0_20px_50px_rgba(0,0,0,0.5),0_0_40px_rgba(0,242,254,0.12)] hover:border-cyan-400/80 hover:shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_50px_rgba(0,242,254,0.35),inset_0_1px_0_rgba(0,242,254,0.2)]'
+              : 'border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-cyan-400/50 hover:shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(0,180,255,0.25),inset_0_1px_0_rgba(0,242,254,0.12)]'
           } transition-[border-color,box-shadow] duration-500`}
+          style={{ willChange: 'transform' }}
         >
           {/* Hover shimmer overlay */}
           <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-400/0 via-cyan-400/[0.05] to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -259,9 +260,18 @@ export const SphenoProducts: React.FC = () => {
   return (
     <section id="products" className="py-24 sm:py-32 bg-[#020412] text-white border-b border-[#141A3D] relative overflow-x-clip select-none">
       
-      {/* Background Ambient Sapphire & Cyan Glows */}
-      <div className="absolute top-1/4 left-[-10%] w-[650px] h-[650px] bg-[#0018C5]/18 blur-[160px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/3 right-[-10%] w-[650px] h-[650px] bg-[#00F2FE]/12 blur-[170px] rounded-full pointer-events-none" />
+      {/* Background Ambient Sapphire & Cyan Glows — isolated onto their own GPU
+          layer (will-change: transform) so scrolling the sticky card stack
+          below doesn't force the browser to repaint these large blurs on
+          every frame; this was showing up as 60ms+ long tasks while scrolling. */}
+      <div
+        className="absolute top-1/4 left-[-10%] w-[650px] h-[650px] bg-[#0018C5]/18 blur-[120px] rounded-full pointer-events-none"
+        style={{ willChange: 'transform' }}
+      />
+      <div
+        className="absolute bottom-1/3 right-[-10%] w-[650px] h-[650px] bg-[#00F2FE]/12 blur-[120px] rounded-full pointer-events-none"
+        style={{ willChange: 'transform' }}
+      />
 
       {/* Micro-dot Background Matrix */}
       <div 
