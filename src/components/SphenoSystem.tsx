@@ -494,7 +494,7 @@ export const SphenoSystem: React.FC = () => {
               <img
                 ref={orbitImgRef}
                 className="eco-orb-image"
-                src="/images/spheno-atom-orb.webp"
+                src="/images/spheno-logo-icon.webp"
                 alt=""
                 draggable={false}
                 aria-hidden="true"
