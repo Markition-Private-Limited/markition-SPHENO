@@ -95,7 +95,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenConsultation }) => {
           aria-label="SPHENO.AI Home"
           className="flex items-center gap-2.5 flex-shrink-0 hover:opacity-85 transition-opacity"
         >
-          <SphenoLogo variant="dark" size="md" className="h-7 sm:h-[30px]" />
+          <SphenoLogo variant="dark" size="md" className="h-8 sm:h-9" />
         </a>
 
         {/* Desktop links */}

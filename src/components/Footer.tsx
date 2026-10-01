@@ -90,13 +90,13 @@ export const Footer: React.FC = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#000028]">
+    <footer className="bg-gradient-to-b from-[#080C42] via-[#04081f] to-[#000028]">
       {/* Main body */}
       <div className="py-14 sm:py-16 lg:py-[72px]">
         <div className="max-w-[1200px] mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 lg:gap-x-12 items-start">
           <div className="sm:col-span-2 lg:col-span-1">
             <a href="#" aria-label="SPHENO.AI Home" className="inline-block hover:opacity-85 transition-opacity mb-5">
-              <SphenoLogo variant="dark" size="lg" className="h-7 sm:h-8" />
+              <SphenoLogo variant="dark" size="lg" className="h-6 sm:h-7" />
             </a>
             <p className="text-[13.5px] leading-relaxed text-[#8aa4c8] max-w-xs">
               Markition&apos;s central AI business system — bringing Spheno Chat, Voice, CRM, and WhatsApp AI into one synchronized operating layer.

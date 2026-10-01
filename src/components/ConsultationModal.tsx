@@ -76,7 +76,7 @@ export const ConsultationModal: React.FC<ConsultationModalProps> = ({ isOpen, on
           <form onSubmit={handleSubmit} className="space-y-4 relative">
             <div>
               <div className="mb-3">
-                <SphenoLogo variant="dark" size="sm" className="h-5 sm:h-6" />
+                <SphenoLogo variant="dark" size="sm" className="h-9 sm:h-10" />
               </div>
               <h3 className="text-2xl font-bold text-white mt-1">
                 Schedule a Spheno AI <br />

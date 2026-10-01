@@ -184,7 +184,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
           {/* Same responsive treatment as line 1: inline flow below sm so the hand icon wraps
               together with the trailing word "automated." instead of dropping to its own line;
               a nowrap flex row at sm+ restores the original guaranteed-single-line desktop layout. */}
-          <div className="w-full mt-1.5 sm:mt-2.5 sm:flex sm:items-center sm:justify-center sm:gap-x-4">
+          <div className="w-full mt-1.5 sm:mt-2.5 sm:flex sm:items-center sm:justify-center sm:gap-x-1.5">
 
             {/* Symmetrical Counter-Spacer on Left (Guarantees Perfect Mathematical Center) */}
             <span
