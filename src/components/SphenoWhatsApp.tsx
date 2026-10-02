@@ -177,8 +177,8 @@ export const SphenoWhatsApp: React.FC = () => {
       {/* 1. ATMOSPHERIC AMBIENT GLOW & TECH SUB-GRID */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Soft Indigo / Blue Central Glow */}
-        <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] bg-[#0018C5]/20 blur-[180px] rounded-full" />
-        <div className="absolute bottom-10 left-10 w-[500px] h-[400px] bg-[#6C2CFF]/15 blur-[160px] rounded-full" />
+        <div className="absolute top-1/2 left-2/3 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.20) 0%, transparent 100%)' }} />
+        <div className="absolute bottom-10 left-10 w-[500px] h-[400px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(108,44,255,0.15) 0%, transparent 100%)' }} />
 
         {/* Micro Technical Grid */}
         <div 
@@ -428,8 +428,8 @@ export const SphenoWhatsApp: React.FC = () => {
               />
 
               {/* Soft Gradient Sheen */}
-              <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-400/15 blur-[80px] rounded-full pointer-events-none" />
-              <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-blue-500/10 blur-[80px] rounded-full pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(52,211,153,0.15) 0%, transparent 100%)' }} />
+              <div className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(59,130,246,0.10) 0%, transparent 100%)' }} />
 
               {/* -------------------------------------------------------- */}
               {/* FLOATING WHATSAPP 3D ICON BADGE (Top Right, Like Reference) */}

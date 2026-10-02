@@ -99,11 +99,22 @@ export const SphenoVoice: React.FC = () => {
 
     let animationFrameId: number;
     let phase = 0;
+    let width = 0, height = 0;
+
+    const setSize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.offsetWidth || 600;
+      const h = canvas.offsetHeight || 120;
+      width = canvas.width = w * dpr;
+      height = canvas.height = h * dpr;
+    };
+    setSize();
+    const ro = new ResizeObserver(setSize);
+    ro.observe(canvas);
 
     const render = () => {
       phase += isPlaying ? 0.06 : 0.01;
-      const width = (canvas.width = canvas.offsetWidth * window.devicePixelRatio || 600);
-      const height = (canvas.height = canvas.offsetHeight * window.devicePixelRatio || 120);
+      const dpr = window.devicePixelRatio || 1;
 
       ctx.clearRect(0, 0, width, height);
       const centerY = height / 2;
@@ -112,31 +123,28 @@ export const SphenoVoice: React.FC = () => {
       const lineCount = 4;
       for (let i = 0; i < lineCount; i++) {
         ctx.beginPath();
-        ctx.lineWidth = i === 0 ? 3 * window.devicePixelRatio : 1.5 * window.devicePixelRatio;
+        ctx.lineWidth = i === 0 ? 3 * dpr : 1.5 * dpr;
 
         // Gradient based on active speaker
         const grad = ctx.createLinearGradient(0, 0, width, 0);
         if (isHuman) {
-          grad.addColorStop(0, 'rgba(56, 189, 248, 0.95)'); // Cyan/Sky blue from human
+          grad.addColorStop(0, 'rgba(56, 189, 248, 0.95)');
           grad.addColorStop(0.5, 'rgba(99, 102, 241, 0.6)');
           grad.addColorStop(1, 'rgba(56, 189, 248, 0.2)');
         } else {
           grad.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
           grad.addColorStop(0.5, 'rgba(129, 140, 248, 0.6)');
-          grad.addColorStop(1, 'rgba(56, 189, 248, 0.95)'); // Cyan/Sky blue into AI
+          grad.addColorStop(1, 'rgba(56, 189, 248, 0.95)');
         }
         ctx.strokeStyle = grad;
 
         const amplitudeBase = isPlaying ? (isHuman ? 28 : 24) : 8;
-        const amplitude = (amplitudeBase - i * 4) * window.devicePixelRatio;
+        const amplitude = (amplitudeBase - i * 4) * dpr;
         const frequency = 0.015 + i * 0.003;
-        const speedMultiplier = isHuman ? 1 : -1; // Wave direction travels toward listener
+        const speedMultiplier = isHuman ? 1 : -1;
 
-        for (let x = 0; x < width; x += 3) {
-          // Envelope: taper at both ends
+        for (let x = 0; x < width; x += 4) {
           const envelope = Math.sin((x / width) * Math.PI);
-          
-          // Complex harmonic wave
           const y =
             centerY +
             Math.sin(x * frequency + phase * speedMultiplier + i) *
@@ -159,15 +167,12 @@ export const SphenoVoice: React.FC = () => {
         const offset = ((phase * 0.35 + p / packetCount) % 1);
         const packetX = isHuman ? offset * width : (1 - offset) * width;
         const envelope = Math.sin((packetX / width) * Math.PI);
-        const packetY = centerY + Math.sin(packetX * 0.02 + phase) * 12 * envelope * window.devicePixelRatio;
+        const packetY = centerY + Math.sin(packetX * 0.02 + phase) * 12 * envelope * dpr;
 
         ctx.beginPath();
-        ctx.arc(packetX, packetY, (2.5 + (p % 2)) * window.devicePixelRatio, 0, Math.PI * 2);
+        ctx.arc(packetX, packetY, (2.5 + (p % 2)) * dpr, 0, Math.PI * 2);
         ctx.fillStyle = isHuman ? 'rgba(56, 189, 248, 0.85)' : 'rgba(167, 139, 250, 0.9)';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 8;
         ctx.fill();
-        ctx.shadowBlur = 0;
       }
 
       animationFrameId = requestAnimationFrame(render);
@@ -177,6 +182,7 @@ export const SphenoVoice: React.FC = () => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      ro.disconnect();
     };
   }, [isPlaying, isHuman]);
 
@@ -188,9 +194,9 @@ export const SphenoVoice: React.FC = () => {
       {/* Cinematic Ambient Atmosphere Glow */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Deep navy & blue ambient backlight */}
-        <div className="absolute top-1/4 left-1/6 w-[600px] h-[500px] bg-[#0018C5]/25 blur-[180px] rounded-full" />
-        <div className="absolute bottom-1/4 right-1/6 w-[650px] h-[500px] bg-[#38bdf8]/15 blur-[180px] rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-[#6366f1]/10 blur-[200px] rounded-full" />
+        <div className="absolute top-1/4 left-1/6 w-[600px] h-[500px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.25) 0%, transparent 100%)' }} />
+        <div className="absolute bottom-1/4 right-1/6 w-[650px] h-[500px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(56,189,248,0.15) 0%, transparent 100%)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(99,102,241,0.10) 0%, transparent 100%)' }} />
       </div>
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">

@@ -12,7 +12,7 @@ export const FinalCta: React.FC<FinalCtaProps> = ({ onOpenConsultation }) => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#080C42] via-[#050625] to-[#080C42] pointer-events-none" />
       
       {/* Central blue light bloom */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[450px] bg-[#0018C5]/25 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[450px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.25) 0%, transparent 100%)' }} />
 
       {/* Converging Graphic Lines: 4 Nodes returning to center */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">

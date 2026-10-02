@@ -121,7 +121,7 @@ export const SphenoSystem: React.FC = () => {
 
   const activeRef = useRef<ModuleId>('voice');
   const pointerRef = useRef({ x: 0.5, y: 0.5 });
-  const changeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const changeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const orbHoverRef = useRef(0); // eases 0->1 while hovered, drives extra canvas intensity
   const orbHoverTargetRef = useRef(0);
 
@@ -152,7 +152,7 @@ export const SphenoSystem: React.FC = () => {
     let W = 0, H = 0, dpr = 1;
     const resize = () => {
       const r = canvas.getBoundingClientRect();
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       W = r.width; H = r.height;
       canvas.width = W * dpr; canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -161,7 +161,7 @@ export const SphenoSystem: React.FC = () => {
     ro.observe(canvas);
     resize();
 
-    const particles = Array.from({ length: 200 }, () => ({
+    const particles = Array.from({ length: 80 }, () => ({
       a: Math.random() * Math.PI * 2,
       r: 0.16 + Math.pow(Math.random(), 0.65) * 0.40,
       z: Math.random() * Math.PI * 2,
@@ -219,8 +219,8 @@ export const SphenoSystem: React.FC = () => {
       ctx.save(); ctx.translate(cx, cy);
       for (let k = 0; k < 5; k++) {
         ctx.beginPath();
-        for (let i = 0; i <= 180; i++) {
-          const p = i / 180, a = p * Math.PI * 2 + t * (0.18 + k * 0.025);
+        for (let i = 0; i <= 60; i++) {
+          const p = i / 60, a = p * Math.PI * 2 + t * (0.18 + k * 0.025);
           const rad = base * (0.15 + k * 0.026) + Math.sin(a * 3 + t * (0.7 + k * 0.1)) * base * 0.009;
           const x = Math.cos(a) * rad * (1.0 + 0.16 * Math.sin(t * 0.5 + k));
           const y = Math.sin(a) * rad * 0.47;

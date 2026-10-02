@@ -15,8 +15,8 @@ export const WhySpheno: React.FC = () => {
       
       {/* Background Ambient Glow & Cosmic Tech Particles */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-rose-600/10 blur-[160px] rounded-full" />
-        <div className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-cyan-500/15 blur-[160px] rounded-full" />
+        <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(225,29,72,0.10) 0%, transparent 100%)' }} />
+        <div className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(6,182,212,0.15) 0%, transparent 100%)' }} />
         
         {/* Subtle grid pattern */}
         <div 

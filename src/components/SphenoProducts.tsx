@@ -265,12 +265,12 @@ export const SphenoProducts: React.FC = () => {
           below doesn't force the browser to repaint these large blurs on
           every frame; this was showing up as 60ms+ long tasks while scrolling. */}
       <div
-        className="absolute top-1/4 left-[-10%] w-[650px] h-[650px] bg-[#0018C5]/18 blur-[120px] rounded-full pointer-events-none"
-        style={{ willChange: 'transform' }}
+        className="absolute top-1/4 left-[-10%] w-[650px] h-[650px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.18) 0%, transparent 100%)' }}
       />
       <div
-        className="absolute bottom-1/3 right-[-10%] w-[650px] h-[650px] bg-[#00F2FE]/12 blur-[120px] rounded-full pointer-events-none"
-        style={{ willChange: 'transform' }}
+        className="absolute bottom-1/3 right-[-10%] w-[650px] h-[650px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,242,254,0.12) 0%, transparent 100%)' }}
       />
 
       {/* Micro-dot Background Matrix */}

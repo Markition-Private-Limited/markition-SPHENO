@@ -39,7 +39,7 @@ export const ContactSection: React.FC = () => {
   return (
     <section className="relative bg-[#080C42] py-20 sm:py-28 overflow-hidden">
       {/* Ambient glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[400px] bg-[#0018C5]/15 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[400px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.15) 0%, transparent 100%)' }} />
 
       <div className="relative max-w-6xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-start">
 

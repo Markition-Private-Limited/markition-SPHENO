@@ -39,10 +39,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
       />
 
       {/* Balanced Left Ambient Glow */}
-      <div className="absolute top-1/4 -left-24 w-[500px] h-[500px] bg-gradient-to-tr from-[#0018C5]/20 via-[#0070F3]/15 to-transparent rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 -left-24 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.20) 0%, rgba(0,112,243,0.15) 50%, transparent 100%)' }} />
 
       {/* Balanced Right Ambient Glow */}
-      <div className="absolute top-1/4 -right-24 w-[500px] h-[500px] bg-gradient-to-tl from-[#00F2FE]/15 via-[#0018C5]/20 to-transparent rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 -right-24 w-[500px] h-[500px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,242,254,0.15) 0%, rgba(0,24,197,0.20) 50%, transparent 100%)' }} />
 
       {/* Central Reading Halo (Gently brightens center area behind text) */}
       <div 
@@ -74,14 +74,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
         }
 
         @keyframes hand-breathe-wave {
-          0%, 100% {
-            transform: translateY(0) scale(1);
-            filter: drop-shadow(0 0 12px rgba(0, 242, 254, 0.75)) drop-shadow(0 0 25px rgba(0, 112, 243, 0.45));
-          }
-          50% {
-            transform: translateY(-3px) scale(1.04);
-            filter: drop-shadow(0 0 18px rgba(0, 242, 254, 0.95)) drop-shadow(0 0 35px rgba(0, 112, 243, 0.65));
-          }
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-3px) scale(1.04); }
         }
 
         @keyframes twinkle-a {
@@ -99,6 +93,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenConsultation }) => {
         }
 
         .anim-hand {
+          filter: drop-shadow(0 0 14px rgba(0, 242, 254, 0.82)) drop-shadow(0 0 28px rgba(0, 112, 243, 0.52));
           animation: hand-breathe-wave 3.8s infinite ease-in-out;
         }
 

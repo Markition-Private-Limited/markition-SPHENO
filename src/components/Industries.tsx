@@ -1056,7 +1056,7 @@ export const Industries: React.FC = () => {
   return (
     <section id="industries" className="py-24 md:py-32 bg-[#050625] text-white border-b border-[#161A35] relative overflow-hidden">
       {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-[#0018C5]/15 blur-[180px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] pointer-events-none rounded-full" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.15) 0%, transparent 100%)' }} />
 
       <div className="max-w-7xl mx-auto px-6 relative">
         

@@ -118,8 +118,8 @@ export const TalkThinkAct: React.FC = () => {
         <div className="sticky top-0 min-h-screen flex items-center py-6 sm:py-8">
 
           {/* Background Ambient Atmosphere (Spheno Electric Cyan & Royal Sapphire) */}
-          <div className="absolute top-1/4 left-[-10%] w-[600px] h-[600px] bg-[#00F2FE]/10 blur-[170px] rounded-full pointer-events-none" />
-          <div className="absolute bottom-1/4 right-[-5%] w-[550px] h-[550px] bg-[#0018C5]/20 blur-[160px] rounded-full pointer-events-none" />
+          <div className="absolute top-1/4 left-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,242,254,0.10) 0%, transparent 100%)' }} />
+          <div className="absolute bottom-1/4 right-[-5%] w-[550px] h-[550px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse closest-side, rgba(0,24,197,0.20) 0%, transparent 100%)' }} />
 
           {/* Subtle Dot Grid */}
           <div
